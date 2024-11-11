@@ -1,0 +1,21 @@
+O Codeigniter 4, a partir da versão 4.4.1, a configuração das rotas foi divida em dois arquivos: routes.php e routing.php
+
+Por favor alterem no arquivo routing.php, a propriedade $autoRoute para true, para que os controllers e seus métodos possam ser encontrados.
+
+//...
+public bool $autoRoute = true; /// ALTERE AQUI PARA TRUE
+//...
+
+Remova o $indexPage em app/Config/App.php
+
+//..
+ public string $indexPage = ''; /// ALTERE AQUI PARA VAZIO
+//..
+
+Altere PUBLIC_SRC em app/Config/Constants.php conforme o app.baseURL atual do projeto
+
+//..
+if (!defined('PUBLIC_SRC')) {
+    define('PUBLIC_SRC', 'http://localhost:8080/src/'); /// ALTERE AQUI PARA O BASE URL CORRESPONDENTE
+}
+//..
