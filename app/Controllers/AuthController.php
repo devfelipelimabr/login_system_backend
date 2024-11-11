@@ -18,6 +18,11 @@ class AuthController extends ResourceController
         $this->userModel = new UserModel();
         $this->blacklistModel = new BlacklistedTokenModel();
         helper('security');
+
+        // Adicionar cabeçalhos CORS
+        header("Access-Control-Allow-Origin: *"); // Permite qualquer origem
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS"); // Métodos permitidos
+        header("Access-Control-Allow-Headers: Content-Type, Authorization"); // Cabeçalhos permitidos
     }
 
     // Registro de usuário
@@ -80,13 +85,13 @@ class AuthController extends ResourceController
     // Verificação de token
     public function verifyToken()
     {
-        $header = $this->request->getHeader('Authorization');
+        $header = $this->request->getHeaderLine('Authorization');
         if (!$header) {
             return $this->failUnauthorized('Token não fornecido');
         }
 
         $token = null;
-        if (preg_match('/Bearer\s(\S+)/', $header->getValue(), $matches)) {
+        if (preg_match('/Bearer\s(\S+)/', $header, $matches)) {
             $token = $matches[1];
         }
 
@@ -111,13 +116,13 @@ class AuthController extends ResourceController
     // Logout de usuário
     public function logout()
     {
-        $header = $this->request->getHeader('Authorization');
+        $header = $this->request->getHeaderLine('Authorization');  // Use getHeaderLine instead of getHeader
         if (!$header) {
             return $this->failUnauthorized('Token não fornecido');
         }
 
         $token = null;
-        if (preg_match('/Bearer\s(\S+)/', $header->getValue(), $matches)) {
+        if (preg_match('/Bearer\s(\S+)/', $header, $matches)) {
             $token = $matches[1];
         }
 
