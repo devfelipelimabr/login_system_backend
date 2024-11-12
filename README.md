@@ -66,29 +66,35 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 **Rota**: `/register`  
 **Método**: `POST`  
 **Corpo da Requisição**:
+
 ```json
 {
   "email": "usuario@exemplo.com",
   "password": "senha123"
 }
 ```
+
 **Resposta**:
+
 - `201 Created`: Usuário registrado com sucesso.
 - `400 Bad Request`: Falha na validação dos campos.
-- `409 Conflict`: E-mail já registrado.
+- `409 Conflict`: E-mail já está registrado.
 
 ### 2. Login de Usuário
 
 **Rota**: `/login`  
 **Método**: `POST`  
 **Corpo da Requisição**:
+
 ```json
 {
   "email": "usuario@exemplo.com",
   "password": "senha123"
 }
 ```
+
 **Resposta**:
+
 - `200 OK`: Token JWT gerado com sucesso.
   ```json
   {
@@ -100,17 +106,30 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 ### 3. Verificação de Token
 
 **Rota**: `/verify`  
-**Método**: `GET`  
-**Cabeçalho da Requisição**: `Authorization: Bearer {token}`  
+**Método**: `POST`  
+**Corpo da Requisição**:
+
+````json
+{
+  "token": "gjkjgJHGj687%87",
+}`
+
 **Resposta**:
 - `200 OK`: Token válido.
-- `401 Unauthorized`: Token inválido ou ausente.
+- `401 Unauthorized`: Token não fornecido.
+- `401 Unauthorized`: Token inválido ou revogado.
 
 ### 4. Logout de Usuário
 
-**Rota**: `/logout`  
-**Método**: `POST`  
-**Cabeçalho da Requisição**: `Authorization: Bearer {token}`  
+**Rota**: `/logout`
+**Método**: `POST`
+**Corpo da Requisição**:
+
+```json
+{
+  "token": "gjkjgJHGj687%87",
+}`
+
 **Resposta**:
 - `200 OK`: Logout realizado com sucesso.
 - `401 Unauthorized`: Token inválido ou ausente.
@@ -138,8 +157,9 @@ Certifique-se de configurar seu ambiente de desenvolvimento corretamente definin
 ## Licença
 
 Este projeto está licenciado sob a [MIT License](LICENSE).
-```
+````
 
 ### Observações:
+
 - Personalize o `README.md` de acordo com o nome do seu repositório e outras informações específicas, como links e referências.
 - Inclua informações adicionais se você modificar ou adicionar funcionalidades novas.
