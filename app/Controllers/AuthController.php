@@ -18,11 +18,6 @@ class AuthController extends ResourceController
         $this->userModel = new UserModel();
         $this->blacklistModel = new BlacklistedTokenModel();
         helper('security');
-
-        // Adicionar cabeçalhos CORS
-        header("Access-Control-Allow-Origin: *"); // Permite qualquer origem
-        header("Access-Control-Allow-Methods: GET, POST, OPTIONS"); // Métodos permitidos
-        header("Access-Control-Allow-Headers: Content-Type, Authorization"); // Cabeçalhos permitidos
     }
 
     // Registro de usuário
@@ -85,18 +80,11 @@ class AuthController extends ResourceController
     // Verificação de token
     public function verifyToken()
     {
-        $header = $this->request->getHeaderLine('Authorization');
-        if (!$header) {
-            return $this->failUnauthorized('Token não fornecido');
-        }
-
-        $token = null;
-        if (preg_match('/Bearer\s(\S+)/', $header, $matches)) {
-            $token = $matches[1];
-        }
+        // Obtenha o token do corpo da requisição
+        $token = $this->request->getPost('token');
 
         if (!$token) {
-            return $this->failUnauthorized('Token inválido');
+            return $this->failUnauthorized('Token não fornecido');
         }
 
         // Verificar se o token está na blacklist
@@ -116,18 +104,16 @@ class AuthController extends ResourceController
     // Logout de usuário
     public function logout()
     {
-        $header = $this->request->getHeaderLine('Authorization');  // Use getHeaderLine instead of getHeader
-        if (!$header) {
+        // Obtenha o token do corpo da requisição
+        $token = $this->request->getPost('token');
+
+        if (!$token) {
             return $this->failUnauthorized('Token não fornecido');
         }
 
-        $token = null;
-        if (preg_match('/Bearer\s(\S+)/', $header, $matches)) {
-            $token = $matches[1];
-        }
-
-        if (!$token) {
-            return $this->failUnauthorized('Token inválido');
+        // Verificar se o token está na blacklist
+        if ($this->blacklistModel->where('token', $token)->first()) {
+            return $this->failUnauthorized('Token inválido ou já foi revogado.');
         }
 
         // Adicionar o token à blacklist

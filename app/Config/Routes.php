@@ -8,5 +8,4 @@ use CodeIgniter\Router\RouteCollection;
 $routes->post('register', 'AuthController::register');
 $routes->post('login', 'AuthController::login');
 $routes->post('logout', 'AuthController::logout');
-
-$routes->get('verify', 'AuthController::verifyToken');
+$routes->post('verify', 'AuthController::verifyToken');
