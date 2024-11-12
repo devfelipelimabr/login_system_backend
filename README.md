@@ -14,7 +14,7 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 1. Clone este repositório:
 
    ```bash
-   git clone https://github.com/seuusuario/seuprojeto.git
+   git clone https://github.com/devfelipelimabr/login_system_backend.git
    cd seuprojeto
    ```
 
