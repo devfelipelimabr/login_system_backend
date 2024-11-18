@@ -17,11 +17,22 @@ class CreateUsersTable extends Migration
             ],
             'email' => [
                 'type'       => 'VARCHAR',
-                'constraint' => '128',
+                'constraint' => '256',
             ],
             'password_hash' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '256',
+            ],
+            'reset_hash' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '256',
+                'null' => true,
+                'default' => null,
+            ],
+            'reset_expires_in' => [
+                'type'       => 'DATETIME',
+                'null' => true,
+                'default' => null,
             ],
             'created_at' => [
                 'type' => 'DATETIME',

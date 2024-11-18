@@ -1,21 +1,25 @@
 # Sistema de Autenticação com CodeIgniter 4 e JWT
 
-Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o framework PHP CodeIgniter 4. Ele implementa funcionalidades básicas de registro, login, verificação de sessão com tokens JWT e logout.
+Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o framework PHP CodeIgniter 4. Ele implementa funcionalidades completas de registro, login, verificação de sessão com tokens JWT, logout, recuperação e redefinição de senha.
 
-## Pré-requisitos
+---
+
+## **Pré-requisitos**
 
 - PHP >= 7.4
 - Composer
 - Servidor web (Apache/Nginx)
 - MySQL ou outro banco de dados compatível com CodeIgniter 4
 
-## Instalação
+---
+
+## **Instalação**
 
 1. Clone este repositório:
 
    ```bash
    git clone https://github.com/devfelipelimabr/login_system_backend.git
-   cd seuprojeto
+   cd login_system_backend
    ```
 
 2. Instale as dependências usando o Composer:
@@ -27,7 +31,7 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 3. Copie o arquivo `.env.example` para `.env`:
 
    ```bash
-   cp env.example .env
+   cp .env.example .env
    ```
 
 4. Configure seu banco de dados no arquivo `.env`:
@@ -44,6 +48,8 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 
    ```plaintext
    JWT_SECRET = "sua_chave_secreta_aqui"
+   JWT_ISSUER = "nome_do_projeto"
+   JWT_AUDIENCE = "usuarios_do_projeto"
    ```
 
 6. Execute as migrações para criar as tabelas necessárias:
@@ -52,16 +58,22 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
    php spark migrate
    ```
 
-## Funcionalidades
+---
+
+## **Funcionalidades**
 
 - **Cadastro de Usuário**: Permite registrar novos usuários.
 - **Login de Usuário**: Gera um token JWT para usuários autenticados.
 - **Verificação de Token**: Verifica se um token JWT é válido.
 - **Logout de Usuário**: "Invalida" um token adicionando-o a uma lista de tokens revogados (blacklist).
+- **Recuperação de Senha**: Envia um e-mail para redefinição de senha com um link/token.
+- **Redefinição de Senha**: Permite ao usuário redefinir sua senha utilizando um token válido.
 
-## Endpoints
+---
 
-### 1. Registro de Usuário
+## **Endpoints**
+
+### **1. Registro de Usuário**
 
 **Rota**: `/register`  
 **Método**: `POST`  
@@ -80,7 +92,9 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 - `400 Bad Request`: Falha na validação dos campos.
 - `409 Conflict`: E-mail já está registrado.
 
-### 2. Login de Usuário
+---
+
+### **2. Login de Usuário**
 
 **Rota**: `/login`  
 **Método**: `POST`  
@@ -96,70 +110,138 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 **Resposta**:
 
 - `200 OK`: Token JWT gerado com sucesso.
+
   ```json
   {
     "token": "seu_token_jwt"
   }
   ```
+
 - `401 Unauthorized`: Credenciais inválidas.
 
-### 3. Verificação de Token
+---
+
+### **3. Verificação de Token**
 
 **Rota**: `/verify`  
 **Método**: `POST`  
 **Corpo da Requisição**:
 
-````json
+```json
 {
-  "token": "gjkjgJHGj687%87",
-}`
+  "token": "seu_token_jwt"
+}
+```
 
 **Resposta**:
+
 - `200 OK`: Token válido.
-- `401 Unauthorized`: Token não fornecido.
-- `401 Unauthorized`: Token inválido ou revogado.
+- `401 Unauthorized`: Token não fornecido ou inválido.
+- `401 Unauthorized`: Token revogado.
 
-### 4. Logout de Usuário
+---
 
-**Rota**: `/logout`
-**Método**: `POST`
+### **4. Logout de Usuário**
+
+**Rota**: `/logout`  
+**Método**: `POST`  
 **Corpo da Requisição**:
 
 ```json
 {
-  "token": "gjkjgJHGj687%87",
-}`
+  "token": "seu_token_jwt"
+}
+```
 
 **Resposta**:
+
 - `200 OK`: Logout realizado com sucesso.
 - `401 Unauthorized`: Token inválido ou ausente.
 
-## Modelos
+---
 
-### UserModel
+### **5. Recuperação de Senha**
 
-Modelo para gerenciar os dados do usuário.
+**Rota**: `/recovery`  
+**Método**: `POST`  
+**Corpo da Requisição**:
 
-### BlacklistedTokenModel
+```json
+{
+  "email": "usuario@exemplo.com"
+}
+```
 
-Modelo para gerenciar tokens JWT revogados.
+**Resposta**:
 
-## Segurança
+- `200 OK`: E-mail de recuperação enviado com sucesso.
+- `401 Unauthorized`: E-mail inválido.
 
-- As senhas são armazenadas com hash utilizando `bcrypt`.
-- Tokens JWT são verificados e validados em cada requisição protegida.
-- Tokens JWT podem ser "revogados" com a abordagem de lista de tokens em blacklist para logout.
+---
 
-## Configuração de Ambiente
+### **6. Verificação de Token de Redefinição**
 
-Certifique-se de configurar seu ambiente de desenvolvimento corretamente definindo as variáveis no arquivo `.env`.
+**Rota**: `/reset-confirm/{token}`  
+**Método**: `GET`  
 
-## Licença
+**Resposta**:
+
+- `200 OK`: Token de redefinição válido.
+- `401 Unauthorized`: Token expirado ou inválido.
+
+---
+
+### **7. Redefinição de Senha**
+
+**Rota**: `/reset`  
+**Método**: `POST`  
+**Corpo da Requisição**:
+
+```json
+{
+  "reset_token": "token_de_redefinicao",
+  "password": "nova_senha"
+}
+```
+
+**Resposta**:
+
+- `200 OK`: Nova senha salva com sucesso.
+- `401 Unauthorized`: Token inválido ou expirado.
+
+---
+
+## **Modelos**
+
+### **UserModel**
+
+Gerencia os dados do usuário, incluindo armazenamento de senhas com hash e recuperação de tokens de redefinição.
+
+### **BlacklistedTokenModel**
+
+Gerencia tokens JWT revogados para logout e controle de sessão.
+
+---
+
+## **Segurança**
+
+- **Armazenamento de senhas**: As senhas são armazenadas usando `bcrypt`.
+- **Validação JWT**: Tokens são validados e autenticados em cada requisição protegida.
+- **Lista negra de tokens**: Tokens podem ser revogados com a lista de tokens na blacklist.
+- **Tokens de redefinição**: Gerados e validados com prazo de expiração.
+
+---
+
+## **Configuração de Ambiente**
+
+Configure corretamente o arquivo `.env` com as variáveis abaixo:
+
+- `JWT_SECRET`: Chave secreta para gerar os tokens JWT.
+- `JWT_ISSUER`: Emissor do token.
+- `JWT_AUDIENCE`: Público-alvo do token.
+
+---
+
+## **Licença**
 
 Este projeto está licenciado sob a [MIT License](LICENSE).
-````
-
-### Observações:
-
-- Personalize o `README.md` de acordo com o nome do seu repositório e outras informações específicas, como links e referências.
-- Inclua informações adicionais se você modificar ou adicionar funcionalidades novas.
