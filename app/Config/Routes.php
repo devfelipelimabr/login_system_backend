@@ -1,11 +1,28 @@
 <?php
 
-use CodeIgniter\Router\RouteCollection;
+use Config\Services;
 
 /**
- * @var RouteCollection $routes
+ * @var \CodeIgniter\Router\RouteCollection $routes
  */
+
+// Registro de usuário
 $routes->post('register', 'AuthController::register');
+
+// Login de usuário
 $routes->post('login', 'AuthController::login');
+
+// Logout de usuário
 $routes->post('logout', 'AuthController::logout');
+
+// Verificação de token
 $routes->post('verify', 'AuthController::verifyToken');
+
+// Recuperação de senha
+$routes->post('recovery', 'AuthController::recovery');
+
+// Verificação de token dinâmico
+$routes->get('reset-confirm/(:segment)', 'AuthController::resetConfirm/$1');
+
+// Redefinição de senha e token dinâmico
+$routes->post('reset', 'AuthController::reset');
