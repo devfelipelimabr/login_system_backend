@@ -50,6 +50,7 @@ class CreateUsersTable extends Migration
         ]);
         $this->forge->addPrimaryKey('id');
         $this->forge->addUniqueKey('email');
+        $this->forge->addKey('reset_hash');
         $this->forge->addKey('created_at');
 
         $this->forge->createTable('users');
