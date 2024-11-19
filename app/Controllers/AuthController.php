@@ -27,7 +27,7 @@ class AuthController extends ResourceController
     // Registro de usuário
     public function register()
     {
-        $email = $this->request->getPost('email');
+        $email = $this->request->getPost('email', FILTER_SANITIZE_EMAIL);
         $password = $this->request->getPost('password');
 
         if (!$email || !$password) {
@@ -54,7 +54,7 @@ class AuthController extends ResourceController
     // Login de usuário
     public function login()
     {
-        $email = $this->request->getPost('email');
+        $email = $this->request->getPost('email', FILTER_SANITIZE_EMAIL);
         $password = $this->request->getPost('password');
 
         if (!$email || !$password) {
@@ -237,6 +237,7 @@ class AuthController extends ResourceController
         $recoveryMsg = view('pw_recovery_mail', [
             'reset_token' => $user->reset_token,
             'name' => $user->name,
+            'recovery_link' => env('EMAIL_RECOVERY_LINK'),
         ]);
 
         // Get the email service instance

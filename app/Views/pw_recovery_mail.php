@@ -47,7 +47,7 @@
         <h1>Redefinição de Senha</h1>
         <p>Olá <?php echo esc($name) ?>,</p>
         <p>Você solicitou a redefinição da sua senha. Para criar uma nova senha, clique no botão abaixo:</p>
-        <a href="<?php echo site_url("reset-confirm/$reset_token") ?>" class="button">Redefinir Senha</a>
+        <a href="<?php echo $recovery_link . $reset_token ?>" class="button">Redefinir Senha</a>
         <p>Este link tem validade de 2 horas.</p>
         <p>Se você não solicitou a redefinição de senha, ignore este e-mail. Sua senha permanecerá inalterada.</p>
     </div>
