@@ -8,6 +8,7 @@ use App\Models\UserModel;
 use App\Models\BlacklistedTokenModel;
 use CodeIgniter\RESTful\ResourceController;
 use DateTimeImmutable;
+use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
@@ -72,12 +73,17 @@ class AuthController extends ResourceController
             'iss' => getenv('JWT_ISSUER'),
             'aud' => getenv('JWT_AUDIENCE'),
             'iat' => time(),
-            'exp' => time() + 3600,
+            'exp' => getenv('JWT_EXPIRATION') ?
+                time() + getenv('JWT_EXPIRATION') :
+                time() + 3600,
             'uid' => $user->id
         ];
         $token = JWT::encode($payload, $key, 'HS256');
 
-        return $this->respond(['token' => $token]);
+        return $this->respond([
+            'token' => $token,
+            'expires_in' => $payload['exp']
+        ]);
     }
 
     // Verificação de token
@@ -99,7 +105,7 @@ class AuthController extends ResourceController
         try {
             $decoded = JWT::decode($token, new Key(getenv('JWT_SECRET'), 'HS256'));
             return $this->respond(['message' => 'Token válido']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->failUnauthorized('Token inválido: ' . $e->getMessage());
         }
     }

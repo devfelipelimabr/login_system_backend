@@ -113,7 +113,8 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 
   ```json
   {
-    "token": "seu_token_jwt"
+    "token": "seu_token_jwt",
+    "expires_in": "timestamp_do_tempo_de_expiração"
   }
   ```
 
