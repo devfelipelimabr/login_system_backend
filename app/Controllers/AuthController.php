@@ -27,149 +27,164 @@ class AuthController extends ResourceController
     // Registro de usuário
     public function register()
     {
-        if ($this->request->getMethod() === 'POST') {
-            $email = $this->request->getPost('email', FILTER_SANITIZE_EMAIL);
-            $password = $this->request->getPost('password');
-
-            if (!$email || !$password) {
-                return $this->fail('Email e senha são obrigatórios', 400);
-            }
-
-            // Verificar se o usuário já existe
-            if ($this->userModel->getUserByEmail($email)) {
-                return $this->fail('O e-mail já está registrado', 409);
-            }
-
-            // Criar usuário
-            $user = new User([
-                'email' => $email,
-                'password' => $password
-            ]);
-            $this->userModel->save($user);
-
-            return $this->respondCreated(['message' => 'Usuário registrado com sucesso']);
+        if ($this->request->getMethod() !== 'POST') {
+            return $this->fail('Método não permitido', 405);
         }
+
+        $email = $this->request->getPost('email', FILTER_SANITIZE_EMAIL);
+        $password = $this->request->getPost('password');
+
+        if (!$email || !$password) {
+            return $this->fail('Email e senha são obrigatórios', 400);
+        }
+
+        // Verificar se o usuário já existe
+        if ($this->userModel->getUserByEmail($email)) {
+            return $this->fail('O e-mail já está registrado', 409);
+        }
+
+        // Criar usuário
+        $user = new User([
+            'email' => $email,
+            'password' => $password
+        ]);
+        $this->userModel->save($user);
+
+        return $this->respondCreated(['message' => 'Usuário registrado com sucesso']);
     }
 
     // Login de usuário
     public function login()
     {
-        if ($this->request->getMethod() === 'POST') {
-            $email = $this->request->getPost('email', FILTER_SANITIZE_EMAIL);
-            $password = $this->request->getPost('password');
-
-            if (!$email || !$password) {
-                return $this->fail('Email e senha são obrigatórios', 400);
-            }
-
-            // Encontrar usuário
-            $user = $this->userModel->getUserByEmail($email);
-            if (!$user || !$user->checkPassword($password)) {
-                return $this->fail('Credenciais inválidas', 401);
-            }
-
-            // Gerar JWT
-            $key = getenv('JWT_SECRET'); // Certifique-se de definir JWT_SECRET no .env
-            $payload = [
-                'iss' => getenv('JWT_ISSUER'),
-                'aud' => getenv('JWT_AUDIENCE'),
-                'iat' => time(),
-                'exp' => getenv('JWT_EXPIRATION') ?
-                    time() + getenv('JWT_EXPIRATION') :
-                    time() + 3600,
-                'uid' => $user->id
-            ];
-            $token = JWT::encode($payload, $key, 'HS256');
-
-            return $this->respond([
-                'token' => $token,
-                'expires_in' => $payload['exp']
-            ]);
+        if ($this->request->getMethod() !== 'POST') {
+            return $this->fail('Método não permitido', 405);
         }
+
+        $email = $this->request->getPost('email', FILTER_SANITIZE_EMAIL);
+        $password = $this->request->getPost('password');
+
+        if (!$email || !$password) {
+            return $this->fail('Email e senha são obrigatórios', 400);
+        }
+
+        // Encontrar usuário
+        $user = $this->userModel->getUserByEmail($email);
+        if (!$user || !$user->checkPassword($password)) {
+            return $this->fail('Credenciais inválidas', 401);
+        }
+
+        // Gerar JWT
+        $key = getenv('JWT_SECRET'); // Certifique-se de definir JWT_SECRET no .env
+        $payload = [
+            'iss' => getenv('JWT_ISSUER'),
+            'aud' => getenv('JWT_AUDIENCE'),
+            'iat' => time(),
+            'exp' => getenv('JWT_EXPIRATION') ?
+                time() + getenv('JWT_EXPIRATION') :
+                time() + 3600,
+            'uid' => $user->id
+        ];
+        $token = JWT::encode($payload, $key, 'HS256');
+
+        return $this->respond([
+            'token' => $token,
+            'expires_in' => $payload['exp']
+        ]);
     }
 
     // Verificação de token
     public function verifyToken()
     {
-        if ($this->request->getMethod() === 'POST') {
-            // Obtenha o token do corpo da requisição
-            $token = $this->request->getPost('token');
+        if ($this->request->getMethod() !== 'POST') {
+            return $this->fail('Método não permitido', 405);
+        }
 
-            if (!$token) {
-                return $this->failUnauthorized('Token não fornecido');
-            }
+        // Obtenha o token do corpo da requisição
+        $token = $this->request->getPost('token');
 
-            // Verificar se o token está na blacklist
-            if ($this->blacklistModel->where('token', $token)->first()) {
-                return $this->failUnauthorized('Token inválido ou revogado.');
-            }
+        if (!$token) {
+            return $this->failUnauthorized('Token não fornecido');
+        }
 
-            // Verificação normal do token JWT
-            try {
-                $decoded = JWT::decode($token, new Key(getenv('JWT_SECRET'), 'HS256'));
-                return $this->respond(['message' => 'Token válido']);
-            } catch (Exception $e) {
-                return $this->failUnauthorized('Token inválido: ' . $e->getMessage());
-            }
+        // Verificar se o token está na blacklist
+        if ($this->blacklistModel->where('token', $token)->first()) {
+            return $this->failUnauthorized('Token inválido ou revogado.');
+        }
+
+        // Verificação normal do token JWT
+        try {
+            $decoded = JWT::decode($token, new Key(getenv('JWT_SECRET'), 'HS256'));
+            return $this->respond(['message' => 'Token válido']);
+        } catch (Exception $e) {
+            return $this->failUnauthorized('Token inválido: ' . $e->getMessage());
         }
     }
 
     // Logout de usuário
     public function logout()
     {
-        if ($this->request->getMethod() === 'POST') {
-            // Obtenha o token do corpo da requisição
-            $token = $this->request->getPost('token');
-
-            if (!$token) {
-                return $this->failUnauthorized('Token não fornecido');
-            }
-
-            // Verificar se o token está na blacklist
-            if ($this->blacklistModel->where('token', $token)->first()) {
-                return $this->failUnauthorized('Token inválido ou já foi revogado.');
-            }
-
-            // Adicionar o token à blacklist
-            $this->blacklistModel->insert(['token' => $token]);
-
-            return $this->respond(['message' => 'Logout realizado com sucesso.']);
+        if ($this->request->getMethod() !== 'POST') {
+            return $this->fail('Método não permitido', 405);
         }
+
+        $authHeader = $this->request->getHeaderLine('Authorization');
+
+        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+            return $this->failUnauthorized('Token não fornecido ou inválido');
+        }
+
+        $token = substr($authHeader, 7); // Remove "Bearer " do início
+
+        if ($this->blacklistModel->where('token', $token)->first()) {
+            return $this->failUnauthorized('Token inválido ou já foi revogado.');
+        }
+
+        $this->blacklistModel->insert(['token' => $token]);
+
+        return $this->respond(['message' => 'Logout realizado com sucesso.']);
     }
 
+    // Recuperação de senha
     public function recovery()
     {
-        if ($this->request->getMethod() === 'POST') {
-            $post = $this->request->getPost();
-
-            if (empty($post['email'])) {
-                return $this->failUnauthorized('E-mail não fornecido');
-            }
-
-            $email = $post['email'];
-
-            $user = $this->userModel->getUserByEmail($email);
-
-            if (! $user) {
-                return $this->fail('Email inválido', 401);
-            }
-
-            $user->startPasswordReset();
-
-            if (! $this->userModel->save($user)) {
-                return $this->fail('Falha do servidor', 500);
-            }
-
-            if (! $this->sendPasswordRecoveryEmail($user)) {
-                return $this->fail('Falha durante envio de e-mail', 500);
-            }
-
-            return $this->respond(['success' => 'E-mail enviado com sucesso']);
+        if ($this->request->getMethod() !== 'POST') {
+            return $this->fail('Método não permitido', 405);
         }
+
+        $post = $this->request->getPost();
+
+        if (empty($post['email'])) {
+            return $this->failUnauthorized('E-mail não fornecido');
+        }
+
+        $email = $post['email'];
+
+        $user = $this->userModel->getUserByEmail($email);
+
+        if (! $user) {
+            return $this->fail('Email inválido', 401);
+        }
+
+        $user->startPasswordReset();
+
+        if (! $this->userModel->save($user)) {
+            return $this->fail('Falha do servidor', 500);
+        }
+
+        if (! $this->sendPasswordRecoveryEmail($user)) {
+            return $this->fail('Falha durante envio de e-mail', 500);
+        }
+
+        return $this->respond(['success' => 'E-mail enviado com sucesso']);
     }
 
+    // Verificação de token dinâmico
     public function resetConfirm(string $reset_token = null)
     {
+        if ($this->request->getMethod() !== 'GET') {
+            return $this->fail('Método não permitido', 405);
+        }
+
         if (!$reset_token) {
             return $this->failUnauthorized('Token não fornecido');
         }
@@ -189,45 +204,46 @@ class AuthController extends ResourceController
         ]);
     }
 
+    // Redefinição de senha
     public function reset()
     {
-
-        if ($this->request->getMethod() === 'POST') {
-
-            $post = $this->request->getPost();
-
-            if (empty($post['reset_token'])) {
-                return $this->failUnauthorized('Token não fornecido');
-            }
-            if (empty($post['password'])) {
-                return $this->failUnauthorized('Senha não fornecida');
-            }
-
-            $tokenHandler = new Token($post['reset_token']);
-            $resetHash = $tokenHandler->getHash(); // Create a hash token based in reset input token
-
-            $user = $this->userModel->getUserByResetHash($resetHash); // Searches the database for a user who has the hash token equal to the one generated in resetHash
-
-            if (!$user || !$this->isValidResetExpires($user->reset_expires_in)) {
-                return $this->failUnauthorized('Requisição expirada ou inválida');
-            }
-
-            // Fill in the user entity with password and password_confirm only, and remove reset_hash and reset_expires_in
-            $userData = [
-                'password' => $post['password'],
-                'reset_hash' => null,
-                'reset_expires_in' => null,
-            ];
-
-            // Populates the entity with the new userData
-            $user->fill($userData);
-
-            if ($this->userModel->save($user)) {
-                return $this->respond(['message' => 'Nova senha salva']);
-            }
-
-            return $this->respond(['errors' => $this->userModel->errors()], 500);
+        if ($this->request->getMethod() !== 'POST') {
+            return $this->fail('Método não permitido', 405);
         }
+
+        $post = $this->request->getPost();
+
+        if (empty($post['reset_token'])) {
+            return $this->failUnauthorized('Token não fornecido');
+        }
+        if (empty($post['password'])) {
+            return $this->failUnauthorized('Senha não fornecida');
+        }
+
+        $tokenHandler = new Token($post['reset_token']);
+        $resetHash = $tokenHandler->getHash(); // Create a hash token based in reset input token
+
+        $user = $this->userModel->getUserByResetHash($resetHash); // Searches the database for a user who has the hash token equal to the one generated in resetHash
+
+        if (!$user || !$this->isValidResetExpires($user->reset_expires_in)) {
+            return $this->failUnauthorized('Requisição expirada ou inválida');
+        }
+
+        // Fill in the user entity with password and password_confirm only, and remove reset_hash and reset_expires_in
+        $userData = [
+            'password' => $post['password'],
+            'reset_hash' => null,
+            'reset_expires_in' => null,
+        ];
+
+        // Populates the entity with the new userData
+        $user->fill($userData);
+
+        if ($this->userModel->save($user)) {
+            return $this->respond(['message' => 'Nova senha salva']);
+        }
+
+        return $this->respond(['errors' => $this->userModel->errors()], 500);
     }
 
     /**
