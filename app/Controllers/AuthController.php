@@ -40,12 +40,10 @@ class AuthController extends ResourceController
         }
 
         // Criar usuário
-        $user = new User(
-            [
-                'email' => $email,
-                'password' => $password
-            ]
-        );
+        $user = new User([
+            'email' => $email,
+            'password' => $password
+        ]);
         $this->userModel->save($user);
 
         return $this->respondCreated(['message' => 'Usuário registrado com sucesso']);
