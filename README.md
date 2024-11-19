@@ -75,7 +75,7 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 
 ### **1. Registro de Usuário**
 
-**Rota**: `/register`  
+**Rota**: `/api/v2/register`  
 **Método**: `POST`  
 **Corpo da Requisição**:
 
@@ -96,7 +96,7 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 
 ### **2. Login de Usuário**
 
-**Rota**: `/login`  
+**Rota**: `/api/v2/login`  
 **Método**: `POST`  
 **Corpo da Requisição**:
 
@@ -124,7 +124,7 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 
 ### **3. Verificação de Token**
 
-**Rota**: `/verify`  
+**Rota**: `/api/v2/verify`  
 **Método**: `POST`  
 **Corpo da Requisição**:
 
@@ -144,7 +144,7 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 
 ### **4. Logout de Usuário**
 
-**Rota**: `/logout`  
+**Rota**: `/api/v2/logout`  
 **Método**: `POST`  
 **Corpo da Requisição**:
 
@@ -163,7 +163,7 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 
 ### **5. Recuperação de Senha**
 
-**Rota**: `/recovery`  
+**Rota**: `/api/v2/recovery`  
 **Método**: `POST`  
 **Corpo da Requisição**:
 
@@ -182,7 +182,7 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 
 ### **6. Verificação de Token de Redefinição**
 
-**Rota**: `/reset-confirm/{token}`  
+**Rota**: `/api/v2/reset-confirm/{token}`  
 **Método**: `GET`  
 
 **Resposta**:
@@ -194,7 +194,7 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 
 ### **7. Redefinição de Senha**
 
-**Rota**: `/reset`  
+**Rota**: `/api/v2/reset`  
 **Método**: `POST`  
 **Corpo da Requisição**:
 
