@@ -90,6 +90,7 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 
 - `201 Created`: Usuário registrado com sucesso.
 - `400 Bad Request`: Falha na validação dos campos.
+- `405 Method Not Allowed`: Método HTTP não permitido.  
 - `409 Conflict`: E-mail já está registrado.
 
 ---
@@ -119,6 +120,7 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
   ```
 
 - `401 Unauthorized`: Credenciais inválidas.
+- `405 Method Not Allowed`: Método HTTP não permitido.  
 
 ---
 
@@ -139,6 +141,7 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 - `200 OK`: Token válido.
 - `401 Unauthorized`: Token não fornecido ou inválido.
 - `401 Unauthorized`: Token revogado.
+- `405 Method Not Allowed`: Método HTTP não permitido.  
 
 ---
 
@@ -146,18 +149,18 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 
 **Rota**: `/api/v2/logout`  
 **Método**: `POST`  
-**Corpo da Requisição**:
+**Cabeçalho da Requisição**:  
+Inclua o token JWT no cabeçalho da requisição utilizando o formato padrão:
 
-```json
-{
-  "token": "seu_token_jwt"
-}
+```http
+Authorization: Bearer <seu_token_jwt>
 ```
 
 **Resposta**:
 
-- `200 OK`: Logout realizado com sucesso.
-- `401 Unauthorized`: Token inválido ou ausente.
+- `200 OK`: Logout realizado com sucesso.  
+- `401 Unauthorized`: Token inválido, ausente ou já revogado.  
+- `405 Method Not Allowed`: Método HTTP não permitido.  
 
 ---
 
@@ -177,6 +180,7 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 
 - `200 OK`: E-mail de recuperação enviado com sucesso.
 - `401 Unauthorized`: E-mail inválido.
+- `405 Method Not Allowed`: Método HTTP não permitido.  
 
 ---
 
@@ -189,6 +193,7 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 
 - `200 OK`: Token de redefinição válido.
 - `401 Unauthorized`: Token expirado ou inválido.
+- `405 Method Not Allowed`: Método HTTP não permitido.  
 
 ---
 
@@ -209,6 +214,7 @@ Este projeto é um sistema de autenticação com `JWT` desenvolvido usando o fra
 
 - `200 OK`: Nova senha salva com sucesso.
 - `401 Unauthorized`: Token inválido ou expirado.
+- `405 Method Not Allowed`: Método HTTP não permitido.  
 
 ---
 
