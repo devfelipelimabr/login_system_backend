@@ -6,23 +6,25 @@ use Config\Services;
  * @var \CodeIgniter\Router\RouteCollection $routes
  */
 
-// Registro de usuário
-$routes->post('register', 'AuthController::register');
+$routes->group('api/v2', function ($routes) {
+    // Registro de usuário
+    $routes->post('register', 'AuthController::register');
 
-// Login de usuário
-$routes->post('login', 'AuthController::login');
+    // Login de usuário
+    $routes->post('login', 'AuthController::login');
 
-// Logout de usuário
-$routes->post('logout', 'AuthController::logout');
+    // Logout de usuário
+    $routes->post('logout', 'AuthController::logout');
 
-// Verificação de token
-$routes->post('verify', 'AuthController::verifyToken');
+    // Verificação de token
+    $routes->post('verify', 'AuthController::verifyToken');
 
-// Recuperação de senha
-$routes->post('recovery', 'AuthController::recovery');
+    // Recuperação de senha
+    $routes->post('recovery', 'AuthController::recovery');
 
-// Verificação de token dinâmico
-$routes->get('reset-confirm/(:segment)', 'AuthController::resetConfirm/$1');
+    // Verificação de token dinâmico
+    $routes->get('reset-confirm/(:segment)', 'AuthController::resetConfirm/$1');
 
-// Redefinição de senha e token dinâmico
-$routes->post('reset', 'AuthController::reset');
+    // Redefinição de senha
+    $routes->post('reset', 'AuthController::reset');
+});
