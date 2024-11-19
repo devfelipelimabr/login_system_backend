@@ -34,6 +34,7 @@ class CreateBlacklistedTokensTable extends Migration
             ],
         ]);
         $this->forge->addPrimaryKey('id');
+        $this->forge->addKey('token');
         $this->forge->addKey('created_at');
 
         $this->forge->createTable('blacklisted_tokens');
