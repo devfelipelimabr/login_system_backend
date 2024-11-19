@@ -1,7 +1,6 @@
 <?php
 
 use CodeIgniter\Router\RouteCollection;
-use Config\Services;
 
 /**
  * @var \CodeIgniter\Router\RouteCollection $routes
@@ -28,4 +27,27 @@ $routes->group('api/v2', ['filter' => 'cors'], function (RouteCollection $routes
 
     // Redefinição de senha
     $routes->post('reset', 'AuthController::reset');
+
+    // Adicionando suporte para OPTIONS (Preflight Requests)
+    $routes->options('register', static function () {
+        return response()->setStatusCode(204); // No Content
+    });
+    $routes->options('login', static function () {
+        return response()->setStatusCode(204);
+    });
+    $routes->options('logout', static function () {
+        return response()->setStatusCode(204);
+    });
+    $routes->options('verify', static function () {
+        return response()->setStatusCode(204);
+    });
+    $routes->options('recovery', static function () {
+        return response()->setStatusCode(204);
+    });
+    $routes->options('reset-confirm/(:segment)', static function () {
+        return response()->setStatusCode(204);
+    });
+    $routes->options('reset', static function () {
+        return response()->setStatusCode(204);
+    });
 });
