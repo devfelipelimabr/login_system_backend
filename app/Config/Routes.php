@@ -1,12 +1,13 @@
 <?php
 
+use CodeIgniter\Router\RouteCollection;
 use Config\Services;
 
 /**
  * @var \CodeIgniter\Router\RouteCollection $routes
  */
 
-$routes->group('api/v2', function ($routes) {
+$routes->group('api/v2', ['filter' => 'cors'], function (RouteCollection $routes): void {
     // Registro de usuário
     $routes->post('register', 'AuthController::register');
 
